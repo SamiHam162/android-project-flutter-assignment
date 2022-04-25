@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:english_words/english_words.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'auth.dart';
@@ -250,6 +251,8 @@ class _RandomWordsUnAuthState extends State<RandomWordsUnAuth> {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -373,15 +376,23 @@ class _RandomWordsUnAuthState extends State<RandomWordsUnAuth> {
                                 children: [
                                   FutureBuilder(
                                     future: AuthRepository.instance().downloadImage(),
+
                                     builder: (BuildContext context, AsyncSnapshot<String> snapshot){
                                       if(snapshot.data == null) print("Dammit");
-                                      return CircleAvatar(
-                                          radius: 50.0,
-                                          backgroundColor: Colors.deepPurple,
-                                          foregroundColor: Colors.purple,
-                                          backgroundImage: snapshot.data != null ? NetworkImage(snapshot.data.toString(),): null
-                                      );
-
+                                      if(snapshot.data != null) {
+                                        return CircleAvatar(
+                                            radius: 50.0,
+                                            backgroundColor: Colors.deepPurple,
+                                            foregroundColor: Colors.purple,
+                                            backgroundImage: snapshot.data != null ? NetworkImage(snapshot.data.toString(),) : null
+                                        );
+                                      }
+                                      else{
+                                        return CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage: NetworkImage("https://firebasestorage.googleapis.com/v0/b/hellome-69159.appspot.com/o/ProfilePicture.png?alt=media&token=f3805d7e-3773-4627-a414-af4cfda1e08e"),
+                                        );
+                                      }
                                     }
                                   )
                                 ],
@@ -414,10 +425,10 @@ class _RandomWordsUnAuthState extends State<RandomWordsUnAuth> {
                                           );
                                           io.File file;
                                           if (result != null) {
-                                            setState(() {
                                               file = io.File(result.files.single.path.toString());
-                                              AuthRepository.instance().uploadImage(file);
-                                            });
+                                              await AuthRepository.instance().uploadImage(file);
+                                              setState(() {
+                                              });
                                           } else {
                                             const snackBar = SnackBar(content: Text("No image selected"));
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);

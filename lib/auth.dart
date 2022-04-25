@@ -90,9 +90,10 @@ class AuthRepository with ChangeNotifier {
   }
 
   Future<String> downloadImage() async {
+    String? uid = _user?.uid;
     try {
       print(_user!.uid);
-      return  await FirebaseStorage.instance.ref('images/' + _user!.uid ).getDownloadURL();
+      return await FirebaseStorage.instance.ref('images/'  ).child(uid!).getDownloadURL();
     } on Exception catch (e) {
       print("noHi");
       return "https://firebasestorage.googleapis.com/v0/b/hellome-69159.appspot.com/o/ProfilePicture.png?alt=media&token=f3805d7e-3773-4627-a414-af4cfda1e08e";
